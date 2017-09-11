@@ -5,4 +5,4 @@ description: |-
     This plugin allows users to assemble assets before doing `helm install` or `upgrade`.
 ignoreFlags: false
 useTunnel: true
-command: "$HELM_PLUGIN_DIR/asset"
+command: "$HELM_PLUGIN_DIR/helm-plugin-asset"

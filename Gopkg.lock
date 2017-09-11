@@ -2,10 +2,40 @@
 
 
 [[projects]]
+  name = "github.com/BurntSushi/toml"
+  packages = ["."]
+  revision = "b26d9c308763d68093482582cea63d69be07a0f0"
+  version = "v0.3.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/facebookgo/symwalk"
+  packages = ["."]
+  revision = "42004b9f322246749dd73ad71008b1f3160c0052"
+
+[[projects]]
   name = "github.com/fsnotify/fsnotify"
   packages = ["."]
   revision = "629574ca2a5df945712d3079857300b5e4da0236"
   version = "v1.4.2"
+
+[[projects]]
+  name = "github.com/ghodss/yaml"
+  packages = ["."]
+  revision = "0ca9ea5df5451ffdf184b4428c902747c2c11cd7"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/gobwas/glob"
+  packages = [".","compiler","match","syntax","syntax/ast","syntax/lexer","util/runes","util/strings"]
+  revision = "bea32b9cd2d6f55753d94a28e959b13f0244797a"
+  version = "v0.2.2"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/protobuf"
+  packages = ["proto","ptypes/any","ptypes/timestamp"]
+  revision = "17ce1425424ab154092bbb43af630bd647f3bb0d"
 
 [[projects]]
   branch = "master"
@@ -97,9 +127,21 @@
   packages = ["."]
   revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 
+[[projects]]
+  branch = "master"
+  name = "k8s.io/apimachinery"
+  packages = ["pkg/version"]
+  revision = "b166f81f5c4c88402ae23a0d0944c6ad08bffd3b"
+
+[[projects]]
+  name = "k8s.io/helm"
+  packages = ["pkg/chartutil","pkg/ignore","pkg/proto/hapi/chart","pkg/proto/hapi/version"]
+  revision = "bbc1f71dc03afc5f00c6ac84b9308f8ecb4f39ac"
+  version = "v2.6.1"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "372a2000bf7147d055aaa557ccddc14ef94d60123797d9f3c538ae464bc6510f"
+  inputs-digest = "b82229a7273ff69350295ae559d6c1dcfb6f2ff42cd83c94d8430052f8a38abd"
   solver-name = "gps-cdcl"
   solver-version = 1
