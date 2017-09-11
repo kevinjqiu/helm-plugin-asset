@@ -8,6 +8,24 @@
   version = "v0.3.0"
 
 [[projects]]
+  name = "github.com/Masterminds/semver"
+  packages = ["."]
+  revision = "517734cc7d6470c0d07130e40fd40bdeb9bcd3fd"
+  version = "v1.3.1"
+
+[[projects]]
+  name = "github.com/Masterminds/sprig"
+  packages = ["."]
+  revision = "9526be0327b26ad31aa70296a7b10704883976d5"
+  version = "2.12.0"
+
+[[projects]]
+  name = "github.com/aokoli/goutils"
+  packages = ["."]
+  revision = "3391d3790d23d03408670993e957e8f408993c34"
+  version = "v1.0.1"
+
+[[projects]]
   branch = "master"
   name = "github.com/facebookgo/symwalk"
   packages = ["."]
@@ -44,6 +62,18 @@
   revision = "8f6b1344a92ff8877cf24a5de9177bf7d0a2a187"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/huandu/xstrings"
+  packages = ["."]
+  revision = "d6590c0c31d16526217fa60fbd2067f7afcd78c5"
+
+[[projects]]
+  name = "github.com/imdario/mergo"
+  packages = ["."]
+  revision = "3e95a51e0639b4cf372f2ccf74c86749d747fbdc"
+  version = "0.2.2"
+
+[[projects]]
   name = "github.com/inconshreveable/mousetrap"
   packages = ["."]
   revision = "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75"
@@ -72,6 +102,12 @@
   packages = ["."]
   revision = "5ccdfb18c776b740aecaf085c4d9a2779199c279"
   version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "879c5887cd475cd7864858769793b2ceb0d44feb"
+  version = "v1.1.0"
 
 [[projects]]
   branch = "master"
@@ -111,6 +147,12 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = ["pbkdf2","scrypt"]
+  revision = "74b34b9dd60829a9fcaf56a59e81c3877a8ecd2c"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "a5054c7c1385fd50d9394475365355a87a7873ec"
@@ -135,13 +177,13 @@
 
 [[projects]]
   name = "k8s.io/helm"
-  packages = ["pkg/chartutil","pkg/ignore","pkg/proto/hapi/chart","pkg/proto/hapi/version"]
+  packages = ["pkg/chartutil","pkg/engine","pkg/ignore","pkg/proto/hapi/chart","pkg/proto/hapi/version"]
   revision = "bbc1f71dc03afc5f00c6ac84b9308f8ecb4f39ac"
   version = "v2.6.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b82229a7273ff69350295ae559d6c1dcfb6f2ff42cd83c94d8430052f8a38abd"
+  inputs-digest = "4562f1f9ca2084a79dd6edce691dd0feb66404ca57bbfd82cd58165427d4764a"
   solver-name = "gps-cdcl"
   solver-version = 1

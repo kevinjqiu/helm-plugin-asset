@@ -6,10 +6,11 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"k8s.io/helm/pkg/chartutil"
+	"github.com/kevinjqiu/helm-plugin-asset/pkg"
 )
 
 var cfgFile string
+var valuesFiles pkg.ValuesOverrideFiles
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -21,9 +22,13 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-// Uncomment the following line if your bare application
-// has an action associated with it:
-//	Run: func(cmd *cobra.Command, args []string) { },
+	Run: func(cmd *cobra.Command, args []string) {
+		rendered, err := pkg.Render(args[0], valuesFiles)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Printf("%v", rendered)
+	},
 }
 
 // Execute adds all child commands to the root command sets flags appropriately.
@@ -43,9 +48,7 @@ func init() {
 	// will be global for your application.
 
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.helm-plugin-asset.yaml)")
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	RootCmd.Flags().VarP(&valuesFiles, "values", "f", "Values override files")
 }
 
 // initConfig reads in config file and ENV variables if set.
