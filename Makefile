@@ -1,4 +1,7 @@
-.PHONY: build
+.PHONY: build dep clean install
+
+dep:
+	dep ensure
 
 clean:
 	rm -rf build/

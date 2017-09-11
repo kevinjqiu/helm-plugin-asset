@@ -31,18 +31,12 @@ func Render(path string, valuesFiles ValuesOverrideFiles) (map[string]string, er
 	t := template.New(path).Funcs(engine.FuncMap()).Delims("<<", ">>")
 	fileContent, _ := ioutil.ReadFile(path)
 	t.Parse(string(fileContent))
-	//t, err := template.ParseFiles(path)
-	//if err != nil {
-	//	return map[string]string{}, fmt.Errorf("render error in %q: %s", path, err)
-	//}
-	//t = t.Funcs(engine.FuncMap()).Delims("<<", ">>")
 	vals, err := vals(valuesFiles)
-	fmt.Printf("%v", vals)
 	if err != nil {
 		return map[string]string{}, fmt.Errorf("render error in %q: %s", path, err)
 	}
 	var buf bytes.Buffer
-	if err := t.ExecuteTemplate(&buf, path, vals); err != nil {
+	if err := t.ExecuteTemplate(&buf, path, map[string]interface{}{"Values": vals}); err != nil {
 		return map[string]string{}, fmt.Errorf("render error in %q: %s", path, err)
 	}
 
