@@ -23,17 +23,21 @@ examples and usage of using your application. For example:
 Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 		assets, err := plugin.NewAssets(assetDir, valuesFile)
 		if err != nil {
-			panic(err)
+			return err
 		}
 
 		err = assets.Render()
 		if err != nil {
-			panic(err)
+			return err
 		}
-		fmt.Printf("Updated!")
+		fmt.Println("Updated! You can now run:")
+		fmt.Printf("    helm install -f %s CHART_NAME\n", valuesFile)
+		fmt.Println("or:")
+		fmt.Printf("    helm upgrade RELEASE_NAME -f %s CHART_NAME\n", valuesFile)
+		return nil
 	},
 }
 

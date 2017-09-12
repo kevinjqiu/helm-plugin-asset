@@ -27,7 +27,7 @@ func NewAssets(rootDir string, valuesFile string) (Assets, error) {
 
 	info, err := os.Stat(rootDir)
 	if err != nil {
-		return Assets{}, err
+		return Assets{}, fmt.Errorf("The assets directory must be present")
 	}
 	return Assets{rootDir, valuesFile, info.Mode(),values}, nil
 }
