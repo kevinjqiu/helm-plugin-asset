@@ -18,8 +18,8 @@ type Assets struct {
 	valuesOverride map[string]interface{}
 }
 
-func NewAssets(rootDir string, files ValuesOverrideFiles) (Assets, error) {
-	values, err := vals(files)
+func NewAssets(rootDir string, valuesFile string) (Assets, error) {
+	values, err := vals(valuesFile)
 	if err != nil {
 		return Assets{}, err
 	}
@@ -85,54 +85,17 @@ func renderSingle(path string, vals map[string]interface{}) (string, error) {
 	return buf.String(), nil
 }
 
-func vals(valsFiles ValuesOverrideFiles) (map[string]interface{}, error) {
-	base := map[string]interface{}{}
-
-	// User specified a values files via -f/--values
-	for _, filePath := range valsFiles {
-		currentMap := map[string]interface{}{}
-		bytes, err := ioutil.ReadFile(filePath)
-		if err != nil {
-			return map[string]interface{}{}, err
-		}
-
-		if err := yaml.Unmarshal(bytes, &currentMap); err != nil {
-			return map[string]interface{}{}, fmt.Errorf("failed to parse %s: %s", filePath, err)
-		}
-		// Merge with the previous map
-		base = mergeValues(base, currentMap)
+func vals(filePath string) (map[string]interface{}, error) {
+	currentMap := map[string]interface{}{}
+	bytes, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		return map[string]interface{}{}, err
 	}
 
-	return base, nil
+	if err := yaml.Unmarshal(bytes, &currentMap); err != nil {
+		return map[string]interface{}{}, fmt.Errorf("failed to parse %s: %s", filePath, err)
+	}
+
+	return currentMap, nil
 }
 
-func mergeValues(dest map[string]interface{}, src map[string]interface{}) map[string]interface{} {
-	for k, v := range src {
-		// If the key doesn't exist already, then just set the key to that value
-		if _, exists := dest[k]; !exists {
-			dest[k] = v
-			continue
-		}
-		nextMap, ok := v.(map[string]interface{})
-		// If it isn't another map, overwrite the value
-		if !ok {
-			dest[k] = v
-			continue
-		}
-		// If the key doesn't exist already, then just set the key to that value
-		if _, exists := dest[k]; !exists {
-			dest[k] = nextMap
-			continue
-		}
-		// Edge case: If the key exists in the destination, but isn't a map
-		destMap, isMap := dest[k].(map[string]interface{})
-		// If the source map has a map for this key, prefer it
-		if !isMap {
-			dest[k] = v
-			continue
-		}
-		// If we got to this point, it is a map in both, so merge them
-		dest[k] = mergeValues(destMap, nextMap)
-	}
-	return dest
-}

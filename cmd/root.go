@@ -9,7 +9,7 @@ import (
 )
 
 var (
-	valuesFiles plugin.ValuesOverrideFiles
+	valuesFile string
 	assetDir string
 )
 
@@ -24,7 +24,7 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		assets, err := plugin.NewAssets(assetDir, valuesFiles)
+		assets, err := plugin.NewAssets(assetDir, valuesFile)
 		if err != nil {
 			panic(err)
 		}
@@ -45,6 +45,6 @@ func Execute() {
 }
 
 func init() {
-	RootCmd.Flags().VarP(&valuesFiles, "values", "f", "Values override files")
+	RootCmd.Flags().StringVar(&valuesFile, "values", "f", "Values override file")
 	RootCmd.Flags().StringVar(&assetDir, "asset-dir", "d", "The parent directory of the assets")
 }
