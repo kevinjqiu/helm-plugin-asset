@@ -45,6 +45,6 @@ func Execute() {
 }
 
 func init() {
-	RootCmd.Flags().StringVar(&valuesFile, "values", "f", "Values override file")
-	RootCmd.Flags().StringVar(&assetDir, "asset-dir", "d", "The parent directory of the assets")
+	RootCmd.Flags().StringVarP(&valuesFile, "values", "f", "", "Values override file")
+	RootCmd.Flags().StringVarP(&assetDir, "asset-dir", "d", "", "The parent directory of the assets")
 }
