@@ -73,7 +73,7 @@ func (a Assets) updateValuesFile(assetMap map[string]string) error {
 	}
 	fmt.Println(string(updatedValues))
 	if a.dryRun {
-		fmt.Printf("Cowardly refuse to overwrite %s. Please use --i-am-sure", a.valuesOverrideFile)
+		fmt.Printf("Cowardly refuse to overwrite %s. Please use --i-am-sure\n", a.valuesOverrideFile)
 	} else {
 		ioutil.WriteFile(a.valuesOverrideFile, updatedValues, a.valuesOverrideFileMode)
 	}
