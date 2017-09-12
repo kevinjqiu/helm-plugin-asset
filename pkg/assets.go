@@ -13,13 +13,14 @@ import (
 )
 
 type Assets struct {
+	dryRun bool
 	rootDir string
 	valuesOverrideFile string
 	valuesOverrideFileMode os.FileMode
 	valuesOverride map[string]interface{}
 }
 
-func NewAssets(rootDir string, valuesFile string) (Assets, error) {
+func NewAssets(rootDir string, valuesFile string, dryRun bool) (Assets, error) {
 	values, err := vals(valuesFile)
 	if err != nil {
 		return Assets{}, err
@@ -29,7 +30,7 @@ func NewAssets(rootDir string, valuesFile string) (Assets, error) {
 	if err != nil {
 		return Assets{}, fmt.Errorf("The assets directory must be present")
 	}
-	return Assets{rootDir, valuesFile, info.Mode(),values}, nil
+	return Assets{dryRun, rootDir, valuesFile, info.Mode(),values}, nil
 }
 
 func (a Assets) Render() error {
@@ -71,7 +72,11 @@ func (a Assets) updateValuesFile(assetMap map[string]string) error {
 		return nil
 	}
 	fmt.Println(string(updatedValues))
-	ioutil.WriteFile(a.valuesOverrideFile, updatedValues, a.valuesOverrideFileMode)
+	if a.dryRun {
+		fmt.Printf("Cowardly refuse to overwrite %s. Please use --i-am-sure", a.valuesOverrideFile)
+	} else {
+		ioutil.WriteFile(a.valuesOverrideFile, updatedValues, a.valuesOverrideFileMode)
+	}
 	return nil
 }
 

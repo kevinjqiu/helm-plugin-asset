@@ -11,20 +11,17 @@ import (
 var (
 	valuesFile string
 	assetDir string
+	iAmSure bool
 )
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
 	Use:   "helm-plugin-asset",
 	Short: "A helm plugin to manage chart assets",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
-
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+	Long: `Render asset files and compile them into the values override file.
+Used with the Dynamic ConfigMap chart.`,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		assets, err := plugin.NewAssets(assetDir, valuesFile)
+		assets, err := plugin.NewAssets(assetDir, valuesFile, !iAmSure)
 		if err != nil {
 			return err
 		}
@@ -51,4 +48,5 @@ func Execute() {
 func init() {
 	RootCmd.Flags().StringVarP(&valuesFile, "values", "f", "", "Values override file")
 	RootCmd.Flags().StringVarP(&assetDir, "asset-dir", "d", "", "The parent directory of the assets")
+	RootCmd.Flags().BoolVar(&iAmSure, "iamsure", false, "Force update of the values override file")
 }
