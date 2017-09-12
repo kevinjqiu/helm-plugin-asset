@@ -5,12 +5,13 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-	"github.com/kevinjqiu/helm-plugin-asset/pkg"
+	plugin "github.com/kevinjqiu/helm-plugin-asset/pkg"
 )
 
-var cfgFile string
-var valuesFiles pkg.ValuesOverrideFiles
+var (
+	valuesFiles plugin.ValuesOverrideFiles
+	assetDir string
+)
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
@@ -23,7 +24,12 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		rendered, err := pkg.Render(args[0], valuesFiles)
+		assets, err := plugin.NewAssets(assetDir, valuesFiles)
+		if err != nil {
+			panic(err)
+		}
+
+		rendered, err := assets.Render()
 		if err != nil {
 			panic(err)
 		}
@@ -31,8 +37,6 @@ to quickly create a Cobra application.`,
 	},
 }
 
-// Execute adds all child commands to the root command sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -41,28 +45,6 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
-
-	// Here you will define your flags and configuration settings.
-	// Cobra supports Persistent Flags, which, if defined here,
-	// will be global for your application.
-
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.helm-plugin-asset.yaml)")
 	RootCmd.Flags().VarP(&valuesFiles, "values", "f", "Values override files")
-}
-
-// initConfig reads in config file and ENV variables if set.
-func initConfig() {
-	if cfgFile != "" { // enable ability to specify config file via flag
-		viper.SetConfigFile(cfgFile)
-	}
-
-	viper.SetConfigName(".helm-plugin-asset") // name of config file (without extension)
-	viper.AddConfigPath("$HOME")  // adding home directory as first search path
-	viper.AutomaticEnv()          // read in environment variables that match
-
-	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	RootCmd.Flags().StringVar(&assetDir, "asset-dir", "d", "The parent directory of the assets")
 }

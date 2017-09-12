@@ -8,7 +8,75 @@ import (
 	"io/ioutil"
 	"github.com/ghodss/yaml"
 	"strings"
+	"path/filepath"
+	"os"
+	//"sync"
 )
+
+type Assets struct {
+	rootDir string
+	valuesOverride map[string]interface{}
+}
+
+func NewAssets(rootDir string, files ValuesOverrideFiles) (Assets, error) {
+	values, err := vals(files)
+	if err != nil {
+		return Assets{}, err
+	}
+
+	return Assets{rootDir, values}, nil
+}
+
+func (a Assets) Render() (map[string]string, error) {
+	assetFiles := make(map[string]string)
+	err := filepath.Walk(a.rootDir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if info.IsDir() {
+			return nil
+		}
+
+		// Use the flattened file path in the configmap
+		flattenedFilePath := strings.Replace(path, "/", "_", -1)
+		assetFiles[flattenedFilePath] = path
+		return nil
+	})
+
+	if err != nil {
+		return map[string]string{}, err
+	}
+
+	//renderedAssets := make(map[string]string)
+
+	//var wg sync.WaitGroup
+	renderChannel := make(chan string)
+	errChannel := make(chan error)
+
+	for cfgMapKey, assetPath := range assetFiles {
+		//wg.Add(1)
+		go func(cfgMapKey string, assetPath string) {
+			content, err := renderSingle(assetPath, a.valuesOverride)
+			//wg.Done()
+			if err != nil {
+				errChannel <- err
+			}
+			renderChannel <- content
+		}(cfgMapKey, assetPath)
+	}
+
+	//wg.Wait()
+	for {
+		select {
+		case content := <- renderChannel:
+			fmt.Println(content)
+		case err := <- errChannel:
+			return map[string]string{}, err
+		}
+	}
+	return map[string]string{}, nil
+}
 
 type ValuesOverrideFiles []string
 
@@ -27,20 +95,17 @@ func (v *ValuesOverrideFiles) Set(value string) error {
 	return nil
 }
 
-func Render(path string, valuesFiles ValuesOverrideFiles) (map[string]string, error) {
+func renderSingle(path string, vals map[string]interface{}) (string, error) {
+	fmt.Printf("Rendering %s...\n", path)
 	t := template.New(path).Funcs(engine.FuncMap()).Delims("<<", ">>")
 	fileContent, _ := ioutil.ReadFile(path)
 	t.Parse(string(fileContent))
-	vals, err := vals(valuesFiles)
-	if err != nil {
-		return map[string]string{}, fmt.Errorf("render error in %q: %s", path, err)
-	}
 	var buf bytes.Buffer
 	if err := t.ExecuteTemplate(&buf, path, map[string]interface{}{"Values": vals}); err != nil {
-		return map[string]string{}, fmt.Errorf("render error in %q: %s", path, err)
+		return "", fmt.Errorf("render error in %q: %s", path, err)
 	}
 
-	return map[string]string{path: buf.String()}, nil
+	return buf.String(), nil
 }
 
 func vals(valsFiles ValuesOverrideFiles) (map[string]interface{}, error) {
