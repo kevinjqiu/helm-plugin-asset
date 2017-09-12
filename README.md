@@ -14,8 +14,7 @@ Usage
 
 This is meant to be invoked by [helm](https://github.com/kubernetes/helm) as helm plugin. To install:
 
-    helm plugin install ... # TODO
-
+    helm plugin install https://github.com/kevinjqiu/helm-plugin-asset
 
 Then run:
 
