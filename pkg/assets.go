@@ -28,7 +28,7 @@ func NewAssets(rootDir string, files ValuesOverrideFiles) (Assets, error) {
 }
 
 func (a Assets) Render() (map[string]string, error) {
-	assetFiles := make(map[string]string)
+	assetMap := make(map[string]string)
 	err := filepath.Walk(a.rootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -40,7 +40,11 @@ func (a Assets) Render() (map[string]string, error) {
 
 		// Use the flattened file path in the configmap
 		flattenedFilePath := strings.Replace(path, "/", "_", -1)
-		assetFiles[flattenedFilePath] = path
+		assetContent, err := renderSingle(path, a.valuesOverride)
+		if err != nil {
+			return err
+		}
+		assetMap[flattenedFilePath] = assetContent
 		return nil
 	})
 
@@ -48,34 +52,7 @@ func (a Assets) Render() (map[string]string, error) {
 		return map[string]string{}, err
 	}
 
-	//renderedAssets := make(map[string]string)
-
-	//var wg sync.WaitGroup
-	renderChannel := make(chan string)
-	errChannel := make(chan error)
-
-	for cfgMapKey, assetPath := range assetFiles {
-		//wg.Add(1)
-		go func(cfgMapKey string, assetPath string) {
-			content, err := renderSingle(assetPath, a.valuesOverride)
-			//wg.Done()
-			if err != nil {
-				errChannel <- err
-			}
-			renderChannel <- content
-		}(cfgMapKey, assetPath)
-	}
-
-	//wg.Wait()
-	for {
-		select {
-		case content := <- renderChannel:
-			fmt.Println(content)
-		case err := <- errChannel:
-			return map[string]string{}, err
-		}
-	}
-	return map[string]string{}, nil
+	return assetMap, nil
 }
 
 type ValuesOverrideFiles []string
