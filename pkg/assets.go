@@ -10,11 +10,12 @@ import (
 	"strings"
 	"path/filepath"
 	"os"
-	//"sync"
 )
 
 type Assets struct {
 	rootDir string
+	valuesOverrideFile string
+	valuesOverrideFileMode os.FileMode
 	valuesOverride map[string]interface{}
 }
 
@@ -24,10 +25,14 @@ func NewAssets(rootDir string, valuesFile string) (Assets, error) {
 		return Assets{}, err
 	}
 
-	return Assets{rootDir, values}, nil
+	info, err := os.Stat(rootDir)
+	if err != nil {
+		return Assets{}, err
+	}
+	return Assets{rootDir, valuesFile, info.Mode(),values}, nil
 }
 
-func (a Assets) Render() (map[string]string, error) {
+func (a Assets) Render() error {
 	assetMap := make(map[string]string)
 	err := filepath.Walk(a.rootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
@@ -49,26 +54,24 @@ func (a Assets) Render() (map[string]string, error) {
 	})
 
 	if err != nil {
-		return map[string]string{}, err
+		return err
 	}
 
-	return assetMap, nil
+	return a.updateValuesFile(assetMap)
 }
 
-type ValuesOverrideFiles []string
-
-func (v *ValuesOverrideFiles) String() string {
-	return fmt.Sprint(*v)
-}
-
-func (v *ValuesOverrideFiles) Type() string {
-	return "ValuesOverrideFiles"
-}
-
-func (v *ValuesOverrideFiles) Set(value string) error {
-	for _, filePath := range strings.Split(value, ",") {
-		*v = append(*v, filePath)
+func (a Assets) updateValuesFile(assetMap map[string]string) error {
+	cfgMapData := make(map[string]string)
+	for cfgMapKey, assetContent := range assetMap {
+		cfgMapData[cfgMapKey] = assetContent
 	}
+	a.valuesOverride["data"] = cfgMapData
+	updatedValues, err := yaml.Marshal(a.valuesOverride)
+	if err != nil {
+		return nil
+	}
+	fmt.Println(string(updatedValues))
+	ioutil.WriteFile(a.valuesOverrideFile, updatedValues, a.valuesOverrideFileMode)
 	return nil
 }
 

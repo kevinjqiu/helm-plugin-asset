@@ -29,11 +29,11 @@ to quickly create a Cobra application.`,
 			panic(err)
 		}
 
-		rendered, err := assets.Render()
+		err = assets.Render()
 		if err != nil {
 			panic(err)
 		}
-		fmt.Printf("%v", rendered)
+		fmt.Printf("Updated!")
 	},
 }
 
