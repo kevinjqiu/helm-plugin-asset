@@ -1,23 +1,23 @@
 package pkg
 
 import (
-	"k8s.io/helm/pkg/engine"
 	"bytes"
-	"text/template"
 	"fmt"
-	"io/ioutil"
 	"github.com/ghodss/yaml"
-	"strings"
-	"path/filepath"
+	"io/ioutil"
+	"k8s.io/helm/pkg/engine"
 	"os"
+	"path/filepath"
+	"strings"
+	"text/template"
 )
 
 type Assets struct {
-	dryRun bool
-	rootDir string
-	valuesOverrideFile string
+	dryRun                 bool
+	rootDir                string
+	valuesOverrideFile     string
 	valuesOverrideFileMode os.FileMode
-	valuesOverride map[string]interface{}
+	valuesOverride         map[string]interface{}
 }
 
 func NewAssets(rootDir string, valuesFile string, dryRun bool) (Assets, error) {
@@ -30,7 +30,7 @@ func NewAssets(rootDir string, valuesFile string, dryRun bool) (Assets, error) {
 	if err != nil {
 		return Assets{}, fmt.Errorf("The assets directory must be present")
 	}
-	return Assets{dryRun, rootDir, valuesFile, info.Mode(),values}, nil
+	return Assets{dryRun, rootDir, valuesFile, info.Mode(), values}, nil
 }
 
 func (a Assets) Render() error {
@@ -86,7 +86,7 @@ func renderSingle(path string, vals map[string]interface{}) (string, error) {
 	fileContent, _ := ioutil.ReadFile(path)
 	t.Parse(string(fileContent))
 	var buf bytes.Buffer
-	if err := t.ExecuteTemplate(&buf, path, map[string]interface{}{"Values": vals}); err != nil {
+	if err := t.Execute(&buf, map[string]interface{}{"Values": vals}); err != nil {
 		return "", fmt.Errorf("render error in %q: %s", path, err)
 	}
 
@@ -106,4 +106,3 @@ func vals(filePath string) (map[string]interface{}, error) {
 
 	return currentMap, nil
 }
-
