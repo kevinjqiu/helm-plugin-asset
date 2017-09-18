@@ -4,10 +4,10 @@ dep:
 	dep ensure
 
 clean:
-	rm -rf build/
+	rm -rf bin/
 
-build/helm-plugin-asset:
-	go build -o build/helm-plugin-asset
+bin/helm-plugin-asset:
+	go build -o bin/helm-plugin-asset
 
 install: clean build/helm-plugin-asset
 	mkdir -p $(HOME)/.helm/plugins/asset
